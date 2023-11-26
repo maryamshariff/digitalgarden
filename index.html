@@ -49,17 +49,32 @@
 
   <script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>
   <script>
+    
     /* global nn */
     
+    const clickLimit = 5; // Set your desired click limit
+    let clickCount = 0;
+    
     function newPatch () {
-      const div = nn.create('div')
-      if (nn.random() > 0.5) {
-        div.setAttribute('class', 'diamond')
+      if (clickCount >= clickLimit) {
+        // Reset patches on reaching the limit
+        nn.clear('body');
+        clickCount = 0;
+      } else {
+        const div = nn.create('div');
+        if (nn.random() > 0.5) {
+          const img = nn.create('img');
+          img.setAttribute('src', 'https://placekitten.com/100/100'); // Replace with your image URL or use a random image API
+          div.appendChild(img);
+        } else {
+          div.setAttribute('class', 'diamond');
+        }
+        div.addTo('body');
+        clickCount++;
       }
-      div.addTo('body')
     }
     
-    nn.on('click', newPatch)
+    nn.on('click', newPatch);
     
   </script>
 
