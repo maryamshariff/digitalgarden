@@ -1,48 +1,23 @@
 <style>
 
+  body {
+    background-color: black; /* Set the background color to black */
+  }
+
   div {
-    width: 100px;
-    height: 100px;
-    background-color: black;
     display: inline-block;
+    margin-right: 10px; /* Adjust this value to set the desired space between patches */
+    border: 2px solid black; /* Add this line to set a border with a 2px width and black color */
+    opacity: 0; /* Set the initial opacity to 0 */
+    transition: opacity 0.5s ease; /* Add a transition for the opacity property */
   }
   
   .diamond {
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   }
   
-  .menu {
-    display: flex;
-    justify-content: space-around;
-  }
-  
-  .menu > a {
-    color: hsl(160, 30%, 50%);
-    font-family: sans-serif;
-    font-size: 24px;
-    text-decoration: none;
-  }
-  
-  .menu > a:hover {
-    color: hsl(160, 70%, 50%);
-    border-bottom: 2px solid hsl(160, 70%, 50%);
-  }
-  
-  @media (max-width: 400px) {
-    .menu {
-      flex-direction: column;
-      align-items: center;
-    }
-  }
 
 </style>
-
-<nav class="menu">
-  <a href="#">music</a>
-  <a href="#">photos</a>
-  <a href="#">videos</a>
-  <a href="#">texts</a>
-</nav>
   
 
 <body>
@@ -53,25 +28,42 @@
     /* global nn */
     
     const clickLimit = 5; // Set your desired click limit
-    let clickCount = 0;
-    
+    let clickCounter = 0;
+
+    const imageOrder = [
+      'https://placekitten.com/150/150',
+      'https://placekitten.com/150/151',
+      // Add more image URLs as needed
+    ];
+
     function newPatch () {
-      if (clickCount >= clickLimit) {
-        // Reset patches on reaching the limit
-        nn.clear('body');
-        clickCount = 0;
+      if (clickCounter >= clickLimit) {
+        // Remove the click event listener after reaching the click limit
+        nn.off('click', newPatch);
       } else {
         const div = nn.create('div');
-        if (nn.random() > 0.5) {
-          const img = nn.create('img');
-          img.setAttribute('src', 'https://placekitten.com/100/100'); // Replace with your image URL or use a random image API
-          div.appendChild(img);
-        } else {
-          div.setAttribute('class', 'diamond');
-        }
+        div.style.backgroundColor = getRandomColor();
+
+        const img = nn.create('img');
+        const imageUrl = imageOrder[clickCounter % imageOrder.length];
+        img.setAttribute('src', imageUrl);
+        img.setAttribute('width', '200'); // Adjust this value to set the width of the images
+        img.setAttribute('height', '200'); // Adjust this value to set the height of the images
+
+        div.appendChild(img);
         div.addTo('body');
-        clickCount++;
+        
+        // Trigger a reflow to apply the initial opacity transition
+        div.offsetHeight;
+        div.style.opacity = 1; // Set opacity to 1 to initiate the fade-in effect
+
+        clickCounter++;
       }
+    }
+
+    function getRandomColor() {
+      const randomColor = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+      return randomColor;
     }
     
     nn.on('click', newPatch);
@@ -79,3 +71,10 @@
   </script>
 
 </body>
+
+
+
+
+
+
+
